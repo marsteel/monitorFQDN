@@ -2,13 +2,14 @@
 
 LOG_FILE=/var/log/monitorFQDN-script.log
 exec 3>&1 1>>${LOG_FILE} 2>&1
+Working_Dir=/root/scripts/monitorFQDN/
 
-declare -a Target_Hostname_array=(example1 example2 example3)
+declare -a Target_Hostname_array=(host1 host2 host3)
 
 for Target_Hostname in "${Target_Hostname_array[@]}"
 do
 
-        this_hostname=${Target_Hostname}.example.domain
+        this_hostname=${Target_Hostname}.domain.com
           echo "${this_hostname}"
 
         resolve_array=( $(dig +answer $this_hostname +short | tail -n4) )
@@ -18,12 +19,13 @@ do
         for resolve_result in "${resolve_array[@]}"
         do
           echo "${resolve_result}"
-          if grep -Fx ${resolve_result} ${this_hostname}.txt
+          if grep -Fx ${resolve_result} ${Working_Dir}${this_hostname}.txt
         then
+                echo "${Working_Dir}${this_hostname}.txt"
                 echo "FQDN resolve unchanged!"
         else
                 echo "FQDN resolve changed! Sending email"
-                echo "FQDN resolve changed! Attached is configured. Check FW Now!" | mail -s "FQDN Changed! ${this_hostname}" -a ${this_hostname}.txt -r 'Cisco TACACS Report <monitorFQDN.no-reply@philips.com>' your_email_addr@example.com
+                echo "FQDN resolve changed! Attached is configured. Check FW Now!" | mail -s "ATOS FQDN Changed! ${this_hostname}" -a ${Working_Dir}${this_hostname}.txt -r 'monitorFQDN <monitorFQDN.no-reply@example.com>' example@example.com
         fi
         done
 done

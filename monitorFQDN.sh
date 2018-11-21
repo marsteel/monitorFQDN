@@ -25,7 +25,9 @@ do
                 echo "FQDN resolve unchanged!"
         else
                 echo "FQDN resolve changed! Sending email"
-                echo "FQDN resolve changed! Attached is configured. Check FW Now!" | mail -s "ATOS FQDN Changed! ${this_hostname}" -a ${Working_Dir}${this_hostname}.txt -r 'monitorFQDN <monitorFQDN.no-reply@example.com>' example@example.com
+                echo "FQDN resolve changed! Attached is configured. Check FW Now!" | mail -s "FQDN Changed! ${this_hostname}" -a ${Working_Dir}${this_hostname}.txt -r 'monitorFQDN <monitorFQDN.no-reply@example.com>' example@example.com
+                #Overwrite baseline file if FQDN resolve is changed. So the email notification will be sent for only once.
+                dig +answer ${this_hostname} +short | tail -n4 > ${this_hostname}.txt
         fi
         done
 done
